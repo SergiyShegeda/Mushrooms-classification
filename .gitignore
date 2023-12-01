@@ -1,4 +1,6 @@
 /datasets/
 /checkpoints/
 .idea/
-venv/
+/venv/
+/runs/
+/results/
