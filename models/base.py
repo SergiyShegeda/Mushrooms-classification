@@ -23,16 +23,26 @@ class Model:
             layers.experimental.preprocessing.RandomContrast(0.2),
 
             layers.Conv2D(16, 3, padding='same', activation='relu'),
+            layers.BatchNormalization(),
             layers.MaxPooling2D(),
+
             layers.Conv2D(32, 3, padding='same', activation='relu'),
+            layers.BatchNormalization(),
             layers.MaxPooling2D(),
+
             layers.Conv2D(64, 3, padding='same', activation='relu'),
+            layers.BatchNormalization(),
+            layers.MaxPooling2D(),
+
+            layers.Conv2D(128, 3, padding='same', activation='relu'),
+            layers.BatchNormalization(),
             layers.MaxPooling2D(),
 
             # Regularization
-            layers.Dropout(0.2),
-
+            layers.Dropout(0.5),
+            layers.GlobalAveragePooling2D(),
             layers.Flatten(),
-            layers.Dense(128, activation='relu'),
-            layers.Dense(self.num_class)
+            layers.Dense(256, activation='relu'),
+            layers.Dropout(0.5),
+            layers.Dense(self.num_class, activation='softmax')
         ])

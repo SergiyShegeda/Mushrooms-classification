@@ -1,6 +1,10 @@
 from tqdm import tqdm
 import tensorflow as tf
 import matplotlib.pyplot as plt
+from callbacks.checkpoint_callback import CustomModelCheckpoint
+import os
+import keras
+from datetime import datetime
 
 
 def check_images(dataset_dir):
@@ -44,3 +48,32 @@ def visualize(history, epochs: int):
     plt.legend(loc='upper right')
     plt.title('Training and Validation Loss')
     plt.show()
+
+
+def compile_model(model):
+    model.compile(
+        optimizer='adam',
+        loss="sparse_categorical_crossentropy",
+        metrics=['accuracy']
+    )
+
+
+def train_model(model, train_data, val_data, epochs, steps_per_epoch, dataset_name):
+    history = model.fit(
+        train_data,
+        validation_data=val_data,
+        epochs=epochs,
+        steps_per_epoch=steps_per_epoch,
+        callbacks=[
+            CustomModelCheckpoint(dataset_name, save_freq=5),
+            keras.callbacks.TensorBoard(log_dir=f"runs/{datetime.now():%Y-%m-%d}/fit/")
+        ]
+    )
+    return history
+
+
+def save_model(model, dataset_name):
+    path = "runs/{}/result".format(datetime.now().strftime("%Y-%m-%d"))
+    os.makedirs(path, exist_ok=True)
+    model.save_weights(f"{path}/{dataset_name}_weights.keras", save_format="keras")
+    model.save(f"{path}/{dataset_name}_model", save_format="tf")
